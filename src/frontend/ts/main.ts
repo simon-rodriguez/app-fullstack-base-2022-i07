@@ -1,9 +1,44 @@
+class Main{
+    private personas: Array<Persona> = new Array();
+    constructor(per:Persona){
+        this.personas.push(per);
+    }
+
+    public addPersona(per: Persona) {
+        this.personas.push(per);
+    }
+    public getPersona(): Persona{
+        return this.personas[0];
+    }
+}
+
 window.onload = inicio;
 
 function inicio(){
-    let btn = document.getElementById("btnSaludar");
+    let per1 = new Persona ("Matias");
+    per1.edad = 12;
+    let main: Main = new Main(per1);
 
+    main.addPersona(new Persona("Pepe"));
+
+    mostrar(main);
+
+    let nombre:string = main.getNombre();
+    alert("Hola "+nombre+" tenes "+main.edad);
+
+
+    let btn = document.getElementById("btnSaludar");
     btn.onclick = saludar;
+}
+
+function mostrar(main:Main) {
+    let personas = main.getPersona();
+    let datosPersonas ="";
+    for(let i in personas) {
+        datosPersonas = datosPersonas + personas[i].toString();
+    }
+
+    alert(main.toString());
 }
 
 function saludar() {
