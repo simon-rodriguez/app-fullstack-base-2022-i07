@@ -31,18 +31,18 @@
                 <h3>Smart Home Web Client!</h3>
                 <br/>
                 <div class="row">
+                    <!-- Modal Trigger -->
+                    <a class="waves-effect waves-light btn modal-trigger" href="#modalAlta">Modal</a>
+
                     <div id="cajaDisp">
-                        
-                            
-                        
                     </div>
-                    
+
                     <div class="input-field col s12 m12 l12 xl12">
                         <input id="iNombre" value="Texto de Entrada"/>
                         <textarea id="textarea_1" class="materialize-textarea" style="height: 150px;" readonly>xxxx</textarea>
                     </div>
                     <div class="col s4 m4 l2 xl2">
-                        <button class="btn waves-effect waves-light button-view" id="btnSaludar" name="hello_button">PRESS ME</button>
+                        <button class="btn waves-effect waves-light button-view" id="btnSaludar" name="hello_button">Actualizar Dispositivos</button>
                     </div>
                     <div class="col s4 m4 l2 xl2">
                         <button class="btn waves-effect waves-light button-view" id="btnOtro" name="hello_button">Otro</button>
@@ -69,5 +69,30 @@
                 </div>
             </div>
         </footer>
+
+        <!-- Modal Structure -->
+        <div id="modalAlta" class="modal">
+            <div class="modal-content">
+                <div class="input-field col s6">
+                    <select multiple id="selectColor">
+                      <option value="" disabled selected>Seleccione</option>
+                      <option value="rojo">Rojo</option>
+                      <option value="verde">Verde</option>
+                      <option value="azul">Azul</option>
+                    </select>
+                    <label>Color de la Luz</label>
+                </div>
+                <div class="input-field col s6">
+                    <input id="txtNombre" type="text" class="validate">
+                    <label for="txtNombre">Nombre</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="btnAdd" class="btn waves-effect waves-light button-view">Agregar</a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+
+            </div>
+        </div>
+
     </body>
   </html>

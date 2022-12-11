@@ -1,3 +1,4 @@
+declare const M;
 class Main implements EventListenerObject,HandleResponse{
     private framework:Framework = new Framework();
     private personas: Array<Persona> = new Array();
@@ -42,9 +43,9 @@ class Main implements EventListenerObject,HandleResponse{
                     <label>
                     Off`;
             if (disp.state==true){
-                grilla+=`<input id="cb_${disp.id}" type="checkbox" checked>`;
+                grilla+=`<input id="cb_${disp.id}" miAtt="dato1" type="checkbox" checked>`;
             } else {
-                grilla+=`<input id="cb_${disp.id}" type="checkbox">`;
+                grilla+=`<input id="cb_${disp.id}" miAtt="dato2" type="checkbox">`;
             }
             
             grilla+=`<span class="lever"></span>
@@ -68,7 +69,8 @@ class Main implements EventListenerObject,HandleResponse{
     handleEvent(object: Event): void {
         let tipoEvento:string=object.type;
         let objEvento:HTMLElement;
-        objEvento= <HTMLElement>object.target;    
+        objEvento= <HTMLElement>object.target;
+        console.log(objEvento);    
         if(objEvento.id=="btnOtro"){
             console.log(objEvento.id, objEvento.textContent);
             
@@ -85,12 +87,35 @@ class Main implements EventListenerObject,HandleResponse{
         }
         else if (objEvento.id.startsWith("cb_")){
             let idDisp=objEvento.id.substring(3);
-            alert("Se cambió el estado del dispositivo "+idDisp + (<HTMLInputElement>objEvento).checked);
+            let miAtt=objEvento.getAttribute("miAtt");
+            alert("Se cambió el estado del dispositivo "+idDisp + " - " + miAtt + " | " + (<HTMLInputElement>objEvento).checked);
+        }
+        else if (objEvento.id=="btnAdd"){
+            alert("Se agregó dispositivo");
+            let elementoTxtNombre = <HTMLInputElement> document.getElementById("txtNombre");
+            console.log(elementoTxtNombre.value);
+            let elementoSelectColor = <HTMLSelectElement> document.getElementById("selectColor");
+            console.log(elementoSelectColor.value);
+            let elementoModal1 = document.getElementById("modalAlta");
+            var instance = M.FormSelect.getInstance(elementoSelectColor);
+            console.log(instance.getSelectedValues());
+            var instanceM = M.Modal.getInstance(elementoModal1);
+            instanceM.close();
         }
     }
 }
 
 window.addEventListener("load", ()=>{
+    //Select
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems, "");
+    M.updateTextFields();
+
+    //Modal
+    var elemsM = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elemsM, "");
+ 
+    //Botones
     let user:Usuario = new Usuario("Juan","jperez","jperez@email.com");
     let per1 = new Persona ("Matias");
     per1.edad = 12;
@@ -98,9 +123,11 @@ window.addEventListener("load", ()=>{
     main.addPersona(new Persona("Pepe"));
     mostrar(main);
     let btn = document.getElementById("btnSaludar");
-    let btn2 = document.getElementById("btnOtro");
     btn.addEventListener("click", main);
+    let btn2 = document.getElementById("btnOtro");
     btn2.addEventListener("click", main);
+    let btnAdd = document.getElementById("btnAdd");
+    btnAdd.addEventListener("click", main);
 });
 
 function mostrar(main:Main) {
