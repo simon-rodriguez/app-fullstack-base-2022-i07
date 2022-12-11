@@ -8,3 +8,17 @@ body {
 main {
     flex: 1 0 auto;
 }
+
+
+.imgloading {
+    width: 192px;
+    height: 108px;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+}
+
+.negrita {
+    color: brown;
+    font-weight: bold;
+}

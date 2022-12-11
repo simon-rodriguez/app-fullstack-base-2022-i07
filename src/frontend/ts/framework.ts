@@ -1,17 +1,12 @@
 class Framework{
 
-    public ejecutarRequest(metodo:string, url:string, data?:any) {
+    public ejecutarRequest(metodo:string, url:string, responseHandler:HandleResponse, data?:any) {
         let xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange=() => {
             if(xmlHttp.readyState==4){
                 if(xmlHttp.status==200){
                     let listaDisp:Array<Device> = JSON.parse(xmlHttp.responseText);
-                    console.log("llegó info del servidor", listaDisp);
-                    let cajaDisp = document.getElementById("cajaDisp");
-                    cajaDisp.innerHTML=`<h4>Dispositivos a mostrar ${listaDisp.length}: </h4>`;
-                    for (let disp of listaDisp){
-                        cajaDisp.innerHTML += `<h5>${disp.id} - ${disp.name}</h5>`;
-                    }
+                    responseHandler.cargarGrilla(listaDisp);
                 }
                 else {
                     alert("ERROR en la consulta");
@@ -27,5 +22,15 @@ class Framework{
 
             xmlHttp.send(); 
         }
+    }
+
+    public mostrarCargando(){
+        let imgLoading = document.getElementById("loading");
+        imgLoading.hidden=false;
+    }
+
+    public ocultarCargando(){
+        let imgLoading = document.getElementById("loading");
+        imgLoading.hidden=true;
     }
 }

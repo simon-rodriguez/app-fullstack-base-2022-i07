@@ -1,4 +1,4 @@
-class Main implements EventListenerObject{
+class Main implements EventListenerObject,HandleResponse{
     private framework:Framework = new Framework();
     private personas: Array<Persona> = new Array();
     constructor(per:Persona){
@@ -12,13 +12,57 @@ class Main implements EventListenerObject{
     }
 
     consultarDispositivoAlServidor() {
-        this.framework.ejecutarRequest("GET","http://localhost:8000/devices");
+        this.framework.ejecutarRequest("GET","http://localhost:8000/devices",this);
         
     }
 
     cambiarDispositivoAlServidor() {
         let json = {id:1, state:0};
-        this.framework.ejecutarRequest("POST","http://localhost:8000/deviceChange",json);
+        this.framework.ejecutarRequest("POST","http://localhost:8000/deviceChange",this,json);
+    }
+
+    cargarGrilla(listaDisp:Array<Device>){
+        console.log("llegó info del servidor", listaDisp);
+        let cajaDisp = document.getElementById("cajaDisp");
+        let grilla:string=`<ul class="collection">`;
+        for (let disp of listaDisp){
+            grilla += `<li class="collection-item avatar">`;
+            if (disp.type==1){
+                grilla+=`<img src="static/images/luz.jpg" alt="" class="circle">`
+            } else {
+                grilla+=`<img src="static/images/ac.jpg" alt="" class="circle">`
+            }
+            grilla+=`
+            <span class="title negrita">${disp.name}</span>
+            <p>${disp.description}<br>
+            </p>
+            <a href="#!" class="secondary-content">
+            <!-- Switch -->
+                <div class="switch">
+                    <label>
+                    Off`;
+            if (disp.state==true){
+                grilla+=`<input id="cb_${disp.id}" type="checkbox" checked>`;
+            } else {
+                grilla+=`<input id="cb_${disp.id}" type="checkbox">`;
+            }
+            
+            grilla+=`<span class="lever"></span>
+                    On
+                    </label>
+                </div>
+            </a>
+        </li>`;
+        }
+        grilla += "</ul>";
+        cajaDisp.innerHTML = grilla;
+
+        for (let disp of listaDisp){
+            let cb=document.getElementById("cb_"+disp.id);
+            cb.addEventListener("click",this);
+        }
+
+        this.framework.ocultarCargando();
     }
 
     handleEvent(object: Event): void {
@@ -35,10 +79,13 @@ class Main implements EventListenerObject{
             alert("Hola "+this.personas[0].getNombre() + " estoy en el main");
         } 
         else if (objEvento.id=="btnSaludar"){
-            let textArea = document.getElementById("textarea_1");
-           // textArea.textContent = "Hola "+this.personas[1].getNombre() + " este es otro boton";   
-            textArea.innerHTML= "Hola "+this.personas[1].getNombre() + " este es otro boton";
+            this.framework.mostrarCargando();
+            //textArea.textContent = "Hola "+this.personas[1].getNombre() + " este es otro boton";   
             this.consultarDispositivoAlServidor();
+        }
+        else if (objEvento.id.startsWith("cb_")){
+            let idDisp=objEvento.id.substring(3);
+            alert("Se cambió el estado del dispositivo "+idDisp + (<HTMLInputElement>objEvento).checked);
         }
     }
 }
