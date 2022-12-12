@@ -12,15 +12,25 @@ class Main implements EventListenerObject,HandleResponse{
         return this.personas;
     }
 
-    consultarDispositivoAlServidor() {
+    consultarDispositivoEnServidor() {
         this.framework.ejecutarRequest("GET","http://localhost:8000/devices",this);
-        
     }
 
-    cambiarDispositivoAlServidor() {
-        let json = {id:1, state:0};
-        this.framework.ejecutarRequest("POST","http://localhost:8000/changeState",this,json);
+    editarDispositivoEnServidor(idDisp) {
+        let json = {"id":idDisp};
+        this.framework.ejecutarRequest("PUT","http://localhost:8000/editdevice/",this,json);
     }
+
+    eliminarDispositivoEnServidor(idDisp) {
+        let json = {"id":idDisp};
+        this.framework.ejecutarRequest("DELETE","http://localhost:8000/deletedevice/",this,json);
+    }
+
+    actualizarDispositivoEnServidor(idDisp) {
+        let json = {"id":idDisp};
+        this.framework.ejecutarRequest("PUT","http://localhost:8000/updatesettings/",this,json);
+    }
+    
 
     cargarGrilla(listaDisp:Array<Device>){
         console.log("llegó info del servidor", listaDisp);
@@ -53,6 +63,8 @@ class Main implements EventListenerObject,HandleResponse{
                     </label>
                 </div>
             </a>
+            <a id="btnEdit_${disp.id}" class="waves-effect waves-teal btn-flat modal-trigger" href="#modalEdit"><i class="material-icons left">edit</i>Editar</a>
+            <a id="btnDelete_${disp.id}" class="waves-effect waves-teal btn-flat modal-trigger" href="#modalDelete"><i class="material-icons left">delete</i>Eliminar</a>
         </li>`;
         }
         grilla += "</ul>";
@@ -63,6 +75,13 @@ class Main implements EventListenerObject,HandleResponse{
             cb.addEventListener("click",this);
         }
 
+        for (let disp of listaDisp){
+            let btnEdit = document.getElementById("btnEdit_"+disp.id);
+            btnEdit.addEventListener("click", this);
+            let btnDelete = document.getElementById("btnDelete_"+disp.id);
+            btnDelete.addEventListener("click", this);
+        }
+
         this.framework.ocultarCargando();
     }
 
@@ -70,17 +89,20 @@ class Main implements EventListenerObject,HandleResponse{
         let tipoEvento:string=object.type;
         let objEvento:HTMLElement;
         objEvento= <HTMLElement>object.target;
-        console.log(objEvento);    
+        console.log(objEvento);
+        if (objEvento.tagName == "I") {
+            objEvento= <HTMLElement>objEvento.parentElement;
+        }
         if (objEvento.id=="btnRefresh"){
             this.framework.mostrarCargando();
-            this.consultarDispositivoAlServidor();
+            this.consultarDispositivoEnServidor();
         }
         else if (objEvento.id.startsWith("cb_")){
             let idDisp=objEvento.id.substring(3);
             let miAtt=objEvento.getAttribute("miAtt");
             alert("Se cambió el estado del dispositivo "+idDisp + " - " + miAtt + " | " + (<HTMLInputElement>objEvento).checked);
         }
-        else if (objEvento.id=="btnAdd"){
+        else if (objEvento.id=="btnConfirmAdd"){
             alert("Se agregó dispositivo");
             let elementoTxtNombre = <HTMLInputElement> document.getElementById("txtNombre");
             console.log(elementoTxtNombre.value);
@@ -91,6 +113,30 @@ class Main implements EventListenerObject,HandleResponse{
             console.log(instance.getSelectedValues());
             var instanceM = M.Modal.getInstance(elementoModal1);
             instanceM.close();
+        }
+        else if (objEvento.id=="btnConfirmEdit"){
+            alert("Se editó dispositivo");
+            let elementoTxtNombre = <HTMLInputElement> document.getElementById("txtNombre");
+            console.log(elementoTxtNombre.value);
+            let elementoModal1 = document.getElementById("modalEdit");
+            var instanceM = M.Modal.getInstance(elementoModal1);
+            instanceM.close();
+        }
+        else if (objEvento.id.startsWith("btnEdit_")){
+            alert("Funciona Edicion");
+        }
+        else if (objEvento.id.startsWith("btnDelete_")){
+            let idDisp=objEvento.id.substring(10);
+            let btnConfirmDelete = document.getElementById("btnConfirmDelete");
+            btnConfirmDelete.addEventListener("click", this);
+        }
+        else if (objEvento.id=="btnConfirmDelete") {
+            let idDisp:Number=1;    
+            this.eliminarDispositivoEnServidor(idDisp);
+            alert(`Dispositivo ${idDisp} eliminado`);
+        }
+        else if (objEvento.id=="help") {
+            alert("Help!");
         }
     }
 }
@@ -105,17 +151,20 @@ window.addEventListener("load", ()=>{
     var elemsM = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elemsM, "");
  
-    //Botones
+    //BORRAR
     let user:Usuario = new Usuario("Juan","jperez","jperez@email.com");
     let per1 = new Persona ("Matias");
     per1.edad = 12;
     let main: Main = new Main(per1);
     main.addPersona(new Persona("Pepe"));
     mostrar(main);
+    //Botones
     let btn = document.getElementById("btnRefresh");
     btn.addEventListener("click", main);
-    let btnAdd = document.getElementById("btnAdd");
-    btnAdd.addEventListener("click", main);
+    let btnConfirmAdd = document.getElementById("btnConfirmAdd");
+    btnConfirmAdd.addEventListener("click", main);
+    let help = document.getElementById("help");
+    help.addEventListener("click", main);
 });
 
 function mostrar(main:Main) {

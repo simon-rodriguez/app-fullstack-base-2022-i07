@@ -5,11 +5,17 @@ class Framework{
         xmlHttp.onreadystatechange=() => {
             if(xmlHttp.readyState==4){
                 if(xmlHttp.status==200){
+                    if(xmlHttp.responseText == "no-refresh") {
+                        console.log("Respuesta correcta. No necesita refresh.");
+                    }
+                    else {
                     let listaDisp:Array<Device> = JSON.parse(xmlHttp.responseText);
                     responseHandler.cargarGrilla(listaDisp);
+                    }
                 }
                 else {
                     alert("ERROR en la consulta");
+                    console.log(xmlHttp.status + ": " + xmlHttp.statusText);
                 }
             }
         }
@@ -19,7 +25,6 @@ class Framework{
             xmlHttp.send(JSON.stringify(data)); 
         }
         else {
-
             xmlHttp.send(); 
         }
     }

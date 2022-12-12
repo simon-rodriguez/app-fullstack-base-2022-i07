@@ -21,7 +21,7 @@
                 <div class="nav-wrapper">
                     <a href="#!" class="brand-logo left" style="margin-left: 15px;">Smart Home</a>
                     <ul id="nav-mobile" class="right" style="margin-right: 15px;">
-                        <li><a href="#">Help</a></li>
+                        <li><a id="help" href="#">Help</a></li>
                     </ul>
                 </div>
             </nav>	
@@ -50,7 +50,7 @@
                 <div class="row">
                     <div class="col l6 s6">
                         <h5 class="white-text">Smart Home</h5>
-                        <p class="grey-text text-lighten-4">Copyright Simon Rodriguez - 2021</p>
+                        <p class="grey-text text-lighten-4">Copyright Simon Rodriguez - 2022</p>
                     </div>
                     <div class="col l6 s6">
                         <h5 class="white-text right-align">Contact</h5>
@@ -82,9 +82,35 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a id="btnAdd" class="btn waves-effect waves-light button-view">Agregar</a>
+                <a id="btnConfirmAdd" class="btn waves-effect waves-light button-view">Agregar</a>
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
 
+            </div>
+        </div>
+
+        <!-- Modal Structure -->
+        <div id="modalEdit" class="modal">
+            <div class="modal-content">
+                <div class="input-field col s6">
+                    <input id="txtNombre" type="text" class="validate">
+                    <label for="txtNombre">Nombre</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="btnConfirmEdit" class="btn waves-effect waves-light button-view">Editar</a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+            </div>
+        </div>
+
+        <!-- Modal Structure -->
+        <div id="modalDelete" class="modal">
+            <div class="modal-content">
+                <h4>¿Eliminar dispositivo?</h4>
+                <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+                <a id="btnConfirmDelete" class="modal-close waves-effect waves-green button-view">ELIMINAR</a>
+                <a class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
             </div>
         </div>
 

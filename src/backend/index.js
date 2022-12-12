@@ -33,29 +33,57 @@ app.get('/devices/:id', function(req, res) {
 // Ejercicio 6 (con query en el path ../ --> URL/key1=param1&key2=param2&...&keyN=paramN) o con un JSON
 app.post('/changestate/', function(req,res) {
     if (req.body.id != undefined && req.body.state != undefined) {
-        console.log("JSON received correctly");
+        console.log("JSON recibido correctamente.");
         let results = devices.filter((device) => device.id == req.body.id);
         results[0].state = req.body.state;
         res.json(results);
     }
     else if (req.query.id !=undefined && req.query.state!=undefined) {
-        console.log("Parameters received correctly");
+        console.log("Parametros recibidos correctamente.");
         let results = devices.filter((device) => device.id == req.query.id);
         results[0].state = req.query.state;
         res.json(results);
     }
     else {
-        console.log("ERROR: Incomplete or no parameters/JSON received");
+        console.log("ERROR: Parametros/JSON incorrecto o no recibido.");
         res.sendStatus(400);
     }
 });
 
-// app.put()
-// app.delete()
+// Recibe un JSON con las modificaciones para el dispositivo
+app.put('/editdevice/', function(req,res) {
+    if (req.body.id != undefined) {
+        console.log(`Dispositivo ${req.body.id} editado.`)
+        res.json(devices).status(200);
+    }
+    else {
+        res.sendStatus(400);
+        console.log("ERROR: ID incorrecta o no recibida.");
+    }
+});
+
+// Recibe un JSON con el dispositivo a eliminar
+app.delete('/deletedevice/', function(req,res) {
+    if (req.body.id != undefined) {
+    console.log(`Dispositivo ${req.body.id} eliminado.`);
+    res.json(devices).status(200);
+    }
+    else {
+        res.sendStatus(400);
+        console.log("ERROR: ID incorrecta o no recibida.");
+    }
+});
+
+
+// Recibe JSON/Parametros para editar la configuración del dispositivo
+app.put('/updatesettings/', function(req,res) {
+    console.log(`Configuración del dispositivo ${req.body.id} actualizada.`);
+    res.send("no-refresh").status(200);
+});
 
 
 app.listen(PORT, function(req, res) {
-    console.log("NodeJS API running correctly");
+    console.log("NodeJS API funcionando correctamente.");
 });
 
 //=======[ End of file ]=======================================================
