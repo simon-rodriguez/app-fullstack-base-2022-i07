@@ -1,6 +1,6 @@
 class Framework{
 
-    public ejecutarRequest(metodo:string, url:string, responseHandler:HandleResponse, data?:any) {
+    public ejecutarRequest(metodo:string, url:string, responseHandler:HandleResponse, tipo:string, data?:any) {
         let xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange=() => {
             if(xmlHttp.readyState==4){
@@ -9,13 +9,21 @@ class Framework{
                         console.log("Respuesta correcta. No necesita refresh.");
                     }
                     else {
-                    let listaDisp:Array<Device> = JSON.parse(xmlHttp.responseText);
-                    responseHandler.cargarGrilla(listaDisp);
+                        if(tipo=="modal"){
+                            // PLACEHOLDER
+                        }
+                        else {
+                            let listaDisp:Array<Device> = JSON.parse(xmlHttp.responseText);
+                            responseHandler.cargarGrilla(listaDisp);
+                            alert("Solicitud completada satisfactoriamente.");
+                        }
                     }
                 }
+                else if(xmlHttp.status==201){
+                    alert("Elemento creado satisfactoriamente.");
+                }
                 else {
-                    alert("ERROR en la consulta");
-                    console.log(xmlHttp.status + ": " + xmlHttp.statusText);
+                    alert(`ERROR en la consulta. Código ${xmlHttp.status}: ${xmlHttp.statusText}`);
                 }
             }
         }

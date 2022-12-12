@@ -12,23 +12,35 @@ class Main implements EventListenerObject,HandleResponse{
         return this.personas;
     }
 
-    consultarDispositivoEnServidor() {
-        this.framework.ejecutarRequest("GET","http://localhost:8000/devices",this);
+    consultarDispositivoEnServidor(idDisp?) {
+        if (idDisp != undefined) {
+            let data = idDisp;
+            console.log(`Obteniendo información del dispositivo ${idDisp}`);
+            this.framework.ejecutarRequest("GET",`http://localhost:8000/devices/${idDisp}`,this,"modal");
+            console.log(this);
+        }
+        else {
+            this.framework.ejecutarRequest("GET","http://localhost:8000/devices",this,"");
+        }
     }
 
-    editarDispositivoEnServidor(idDisp) {
-        let json = {"id":idDisp};
-        this.framework.ejecutarRequest("PUT","http://localhost:8000/editdevice/",this,json);
+    crearDispositivoEnServidor(data) {
+        this.framework.ejecutarRequest("POST","http://localhost:8000/addDevice/",this,"",data)
+    }
+
+    editarDispositivoEnServidor(idDisp, edits) {
+        let data = edits;
+        this.framework.ejecutarRequest("PUT","http://localhost:8000/editdevice/",this,"",data);
     }
 
     eliminarDispositivoEnServidor(idDisp) {
-        let json = {"id":idDisp};
-        this.framework.ejecutarRequest("DELETE","http://localhost:8000/deletedevice/",this,json);
+        let data = {"id":idDisp};
+        this.framework.ejecutarRequest("DELETE","http://localhost:8000/deletedevice/",this,"",data);
     }
 
     actualizarDispositivoEnServidor(idDisp) {
-        let json = {"id":idDisp};
-        this.framework.ejecutarRequest("PUT","http://localhost:8000/updatesettings/",this,json);
+        let data = {"id":idDisp};
+        this.framework.ejecutarRequest("PUT","http://localhost:8000/updatesettings/",this,"",data);
     }
     
 
@@ -85,6 +97,105 @@ class Main implements EventListenerObject,HandleResponse{
         this.framework.ocultarCargando();
     }
 
+    cargarModal(tipo:string, idDisp?:string){
+        if (tipo=="add") {
+            let modalAlta = document.getElementById("modalAlta");
+            let modal:string = `
+            <div class="modal-content">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field col s2">
+                        <input id="txtId" type="text" class="validate">
+                        <label for="txtId">ID</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="deviceName" type="text" class="validate">
+                        <label for="deviceName">Nombre</label>
+                    </div>
+                    <div class="input-field col s8 m6">
+                        <select id="selectDevice" class="icons">
+                          <option value="" disabled selected>Seleccionar Tipo</option>
+                          <option value="0" data-icon="static/images/luz.jpg">Lámpara</option>
+                          <option value="1" data-icon="static/images/ac.jpg">Ventana</option>
+                          <option value="2" data-icon="static/images/ac.jpg">Aire Acondicionado</option>
+                        </select>
+                        <label>Tipo de Dispositivo</label>
+                      </div>
+                    <div class="input-field col s12">
+                        <input id="deviceDescription" type="text" class="validate">
+                        <label for="deviceDescription">Descripción del Dispositivo</label>
+                      </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <a id="btnConfirmAdd" class="btn waves-effect waves-light button-view">Agregar</a>
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        </div>`;
+        modalAlta.innerHTML = modal;
+        let btnConfirmAdd = document.getElementById("btnConfirmAdd");
+        btnConfirmAdd.addEventListener("click", this);
+        }
+        else if (tipo=="edit"){
+            this.consultarDispositivoEnServidor(idDisp);
+            let modalEdit = document.getElementById("modalEdit");
+            let modal:string = `
+            <div class="modal-content">
+                <h4>Editando dispositivo ${idDisp}</h4>
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="deviceName" type="text" class="validate">
+                            <label for="deviceName">Nombre</label>
+                        </div>
+                        <div class="input-field col s12 m6">
+                            <select id="selectDevice" class="icons">
+                              <option value="" disabled selected>Seleccionar Tipo</option>
+                              <option value="0" data-icon="static/images/luz.jpg">Lámpara</option>
+                              <option value="1" data-icon="static/images/ac.jpg">Ventana</option>
+                              <option value="2" data-icon="static/images/ac.jpg">Aire Acondicionado</option>
+                            </select>
+                            <label>Tipo de Dispositivo</label>
+                          </div>
+                        <div class="input-field col s12">
+                            <input id="deviceDescription" type="text" class="validate">
+                            <label for="deviceDescription">Descripción del Dispositivo</label>
+                          </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a id="btnConfirmEdit" idDisp="${idDisp}" class="btn waves-effect waves-light button-view">Editar</a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+            </div>`;
+            modalEdit.innerHTML = modal;
+            let btnConfirmEdit = document.getElementById("btnConfirmEdit");
+            btnConfirmEdit.addEventListener("click", this);
+        }
+        else if (tipo=="delete"){
+            let modalDelete = document.getElementById("modalDelete");
+            let modal:string = `
+                <div class="modal-content">
+                    <h4>¿Eliminar dispositivo ${idDisp}?</h4>
+                    <p>Esta acción no se puede echar para atrás. Al continuar, se procederá a eliminar el dispositivo ${idDisp}.</p>
+                </div>
+                <div class="modal-footer">
+                    <a id="btnConfirmDelete" idDisp="${idDisp}" class="modal-close waves-effect waves-green button-view">ELIMINAR</a>
+                    <a class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+                </div>`;
+                modalDelete.innerHTML = modal;
+                let btnConfirmDelete = document.getElementById("btnConfirmDelete");
+                btnConfirmDelete.addEventListener("click", this);
+        }
+        else {
+            alert("error");
+        }
+        //Initialize Select
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems, "");
+        M.updateTextFields();
+    };
+
     handleEvent(object: Event): void {
         let tipoEvento:string=object.type;
         let objEvento:HTMLElement;
@@ -102,36 +213,47 @@ class Main implements EventListenerObject,HandleResponse{
             let miAtt=objEvento.getAttribute("miAtt");
             alert("Se cambió el estado del dispositivo "+idDisp + " - " + miAtt + " | " + (<HTMLInputElement>objEvento).checked);
         }
-        else if (objEvento.id=="btnConfirmAdd"){
-            alert("Se agregó dispositivo");
-            let elementoTxtNombre = <HTMLInputElement> document.getElementById("txtNombre");
-            console.log(elementoTxtNombre.value);
-            let elementoSelectColor = <HTMLSelectElement> document.getElementById("selectColor");
-            console.log(elementoSelectColor.value);
-            let elementoModal1 = document.getElementById("modalAlta");
-            var instance = M.FormSelect.getInstance(elementoSelectColor);
-            console.log(instance.getSelectedValues());
-            var instanceM = M.Modal.getInstance(elementoModal1);
-            instanceM.close();
+        else if (objEvento.id=="btnAdd"){
+            this.cargarModal("add");
         }
-        else if (objEvento.id=="btnConfirmEdit"){
-            alert("Se editó dispositivo");
-            let elementoTxtNombre = <HTMLInputElement> document.getElementById("txtNombre");
-            console.log(elementoTxtNombre.value);
-            let elementoModal1 = document.getElementById("modalEdit");
-            var instanceM = M.Modal.getInstance(elementoModal1);
+        else if (objEvento.id=="btnConfirmAdd"){
+            let txtId = <HTMLInputElement> document.getElementById("txtId");
+            let txtName = <HTMLInputElement> document.getElementById("deviceName");
+            let txtDescription = <HTMLInputElement> document.getElementById("deviceDescription");
+            let selectDevice = <HTMLSelectElement> document.getElementById("selectDevice");
+            console.log(txtId);
+            console.log(txtName.value);
+            console.log(txtDescription.value);
+            console.log(selectDevice.value);
+            let jsondata = {"id":txtId.value, "name":txtName.value, "description":txtDescription.value, "type":selectDevice.value};
+            this.crearDispositivoEnServidor(jsondata);
+            alert("Agregando dispositivo...");
+            let elementoModal = document.getElementById("modalAlta");
+            var instanceM = M.Modal.getInstance(elementoModal);
             instanceM.close();
         }
         else if (objEvento.id.startsWith("btnEdit_")){
-            alert("Funciona Edicion");
+            let idDisp=objEvento.id.substring(8);
+            this.cargarModal("edit",idDisp);
+        }
+        else if (objEvento.id=="btnConfirmEdit"){
+            let idDisp = objEvento.getAttribute("idDisp");
+            let txtName = <HTMLInputElement> document.getElementById("deviceName");
+            let txtDescription = <HTMLInputElement> document.getElementById("deviceDescription");
+            let selectDevice = <HTMLSelectElement> document.getElementById("selectDevice");
+            let jsondata = {"id":idDisp, "name":txtName.value, "description":txtDescription.value, "type":selectDevice.value};
+            this.editarDispositivoEnServidor(idDisp,jsondata);
+            alert("Modificando dispositivo...");
+            let elementoModal = document.getElementById("modalEdit");
+            var instanceM = M.Modal.getInstance(elementoModal);
+            instanceM.close();
         }
         else if (objEvento.id.startsWith("btnDelete_")){
             let idDisp=objEvento.id.substring(10);
-            let btnConfirmDelete = document.getElementById("btnConfirmDelete");
-            btnConfirmDelete.addEventListener("click", this);
+            this.cargarModal("delete",idDisp);
         }
         else if (objEvento.id=="btnConfirmDelete") {
-            let idDisp:Number=1;    
+            let idDisp = objEvento.getAttribute("idDisp");    
             this.eliminarDispositivoEnServidor(idDisp);
             alert(`Dispositivo ${idDisp} eliminado`);
         }
@@ -142,15 +264,12 @@ class Main implements EventListenerObject,HandleResponse{
 }
 
 window.addEventListener("load", ()=>{
-    //Select
-    var elems = document.querySelectorAll('select');
-    var instances = M.FormSelect.init(elems, "");
-    M.updateTextFields();
-
+    //Initialization
     //Modal
     var elemsM = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elemsM, "");
  
+    //LISTENER
     //BORRAR
     let user:Usuario = new Usuario("Juan","jperez","jperez@email.com");
     let per1 = new Persona ("Matias");
@@ -161,8 +280,8 @@ window.addEventListener("load", ()=>{
     //Botones
     let btn = document.getElementById("btnRefresh");
     btn.addEventListener("click", main);
-    let btnConfirmAdd = document.getElementById("btnConfirmAdd");
-    btnConfirmAdd.addEventListener("click", main);
+    let btnAdd = document.getElementById("btnAdd");
+    btnAdd.addEventListener("click", main);
     let help = document.getElementById("help");
     help.addEventListener("click", main);
 });

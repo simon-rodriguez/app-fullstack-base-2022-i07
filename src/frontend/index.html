@@ -38,7 +38,7 @@
                         <button class="btn waves-effect waves-light button-view" id="btnRefresh" name="hello_button">Actualizar Lista</button>
                     </div>
                     <div class="col s4 m4 l2 xl2">
-                        <a class="waves-effect waves-light btn modal-trigger" href="#modalAlta">Agregar Dispositivo</a>
+                        <a id='btnAdd' class="waves-effect waves-light btn modal-trigger" href="#modalAlta">Agregar Dispositivo</a>
                     </div>
                     </div>
                 </div>
@@ -66,52 +66,14 @@
 
         <!-- Modal Structure -->
         <div id="modalAlta" class="modal">
-            <div class="modal-content">
-                <div class="input-field col s6">
-                    <select multiple id="selectColor">
-                      <option value="" disabled selected>Seleccione</option>
-                      <option value="rojo">Rojo</option>
-                      <option value="verde">Verde</option>
-                      <option value="azul">Azul</option>
-                    </select>
-                    <label>Color de la Luz</label>
-                </div>
-                <div class="input-field col s6">
-                    <input id="txtNombre" type="text" class="validate">
-                    <label for="txtNombre">Nombre</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a id="btnConfirmAdd" class="btn waves-effect waves-light button-view">Agregar</a>
-                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
-
-            </div>
         </div>
 
         <!-- Modal Structure -->
         <div id="modalEdit" class="modal">
-            <div class="modal-content">
-                <div class="input-field col s6">
-                    <input id="txtNombre" type="text" class="validate">
-                    <label for="txtNombre">Nombre</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a id="btnConfirmEdit" class="btn waves-effect waves-light button-view">Editar</a>
-                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
-            </div>
         </div>
 
         <!-- Modal Structure -->
         <div id="modalDelete" class="modal">
-            <div class="modal-content">
-                <h4>¿Eliminar dispositivo?</h4>
-                <p>A bunch of text</p>
-            </div>
-            <div class="modal-footer">
-                <a id="btnConfirmDelete" class="modal-close waves-effect waves-green button-view">ELIMINAR</a>
-                <a class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
-            </div>
         </div>
 
     </body>
