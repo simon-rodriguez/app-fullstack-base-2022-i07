@@ -19,7 +19,7 @@ class Main implements EventListenerObject,HandleResponse{
 
     cambiarDispositivoAlServidor() {
         let json = {id:1, state:0};
-        this.framework.ejecutarRequest("POST","http://localhost:8000/deviceChange",this,json);
+        this.framework.ejecutarRequest("POST","http://localhost:8000/changeState",this,json);
     }
 
     cargarGrilla(listaDisp:Array<Device>){
@@ -28,9 +28,9 @@ class Main implements EventListenerObject,HandleResponse{
         let grilla:string=`<ul class="collection">`;
         for (let disp of listaDisp){
             grilla += `<li class="collection-item avatar">`;
-            if (disp.type==1){
+            if (disp.type==0){
                 grilla+=`<img src="static/images/luz.jpg" alt="" class="circle">`
-            } else {
+            } else if(disp.type==1){
                 grilla+=`<img src="static/images/ac.jpg" alt="" class="circle">`
             }
             grilla+=`
@@ -71,18 +71,8 @@ class Main implements EventListenerObject,HandleResponse{
         let objEvento:HTMLElement;
         objEvento= <HTMLElement>object.target;
         console.log(objEvento);    
-        if(objEvento.id=="btnOtro"){
-            console.log(objEvento.id, objEvento.textContent);
-            
-            let iNombre = <HTMLInputElement>document.getElementById("iNombre");
-           
-            objEvento.textContent=iNombre.value; 
-            console.log(objEvento.textContent);
-            alert("Hola "+this.personas[0].getNombre() + " estoy en el main");
-        } 
-        else if (objEvento.id=="btnSaludar"){
+        if (objEvento.id=="btnRefresh"){
             this.framework.mostrarCargando();
-            //textArea.textContent = "Hola "+this.personas[1].getNombre() + " este es otro boton";   
             this.consultarDispositivoAlServidor();
         }
         else if (objEvento.id.startsWith("cb_")){
@@ -122,10 +112,8 @@ window.addEventListener("load", ()=>{
     let main: Main = new Main(per1);
     main.addPersona(new Persona("Pepe"));
     mostrar(main);
-    let btn = document.getElementById("btnSaludar");
+    let btn = document.getElementById("btnRefresh");
     btn.addEventListener("click", main);
-    let btn2 = document.getElementById("btnOtro");
-    btn2.addEventListener("click", main);
     let btnAdd = document.getElementById("btnAdd");
     btnAdd.addEventListener("click", main);
 });
