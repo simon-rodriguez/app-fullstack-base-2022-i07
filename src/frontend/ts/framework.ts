@@ -15,7 +15,6 @@ class Framework{
                         else {
                             let listaDisp:Array<Device> = JSON.parse(xmlHttp.responseText);
                             responseHandler.cargarGrilla(listaDisp);
-                            alert("Solicitud completada satisfactoriamente.");
                         }
                     }
                 }

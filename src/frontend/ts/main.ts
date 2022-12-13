@@ -42,6 +42,11 @@ class Main implements EventListenerObject,HandleResponse{
         let data = {"id":idDisp};
         this.framework.ejecutarRequest("PUT","http://localhost:8000/updatesettings/",this,"",data);
     }
+
+    cambiarEstadoEnServidor(idDisp,state) {
+        let data = {"id":idDisp, "state":state};
+        this.framework.ejecutarRequest("POST","http://localhost:8000/changestate/",this,"modal",data);
+    }
     
 
     cargarGrilla(listaDisp:Array<Device>){
@@ -51,9 +56,9 @@ class Main implements EventListenerObject,HandleResponse{
         for (let disp of listaDisp){
             grilla += `<li class="collection-item avatar">`;
             if (disp.type==0){
-                grilla+=`<img src="static/images/luz.jpg" alt="" class="circle">`
+                grilla+=`<img src="static/images/lightbulb.jpg" alt="" class="circle">`
             } else if(disp.type==1){
-                grilla+=`<img src="static/images/ac.jpg" alt="" class="circle">`
+                grilla+=`<img src="static/images/window.jpg" alt="" class="circle">`
             }
             grilla+=`
             <span class="title negrita">${disp.name}</span>
@@ -65,9 +70,9 @@ class Main implements EventListenerObject,HandleResponse{
                     <label>
                     Off`;
             if (disp.state==true){
-                grilla+=`<input id="cb_${disp.id}" miAtt="dato1" type="checkbox" checked>`;
+                grilla+=`<input id="cb_${disp.id}" type="checkbox" checked>`;
             } else {
-                grilla+=`<input id="cb_${disp.id}" miAtt="dato2" type="checkbox">`;
+                grilla+=`<input id="cb_${disp.id}" type="checkbox">`;
             }
             
             grilla+=`<span class="lever"></span>
@@ -115,9 +120,8 @@ class Main implements EventListenerObject,HandleResponse{
                     <div class="input-field col s8 m6">
                         <select id="selectDevice" class="icons">
                           <option value="" disabled selected>Seleccionar Tipo</option>
-                          <option value="0" data-icon="static/images/luz.jpg">Lámpara</option>
-                          <option value="1" data-icon="static/images/ac.jpg">Ventana</option>
-                          <option value="2" data-icon="static/images/ac.jpg">Aire Acondicionado</option>
+                          <option value="0" data-icon="static/images/lightbulb.jpg">Lámpara</option>
+                          <option value="1" data-icon="static/images/window.jpg">Ventana</option>
                         </select>
                         <label>Tipo de Dispositivo</label>
                       </div>
@@ -151,9 +155,8 @@ class Main implements EventListenerObject,HandleResponse{
                         <div class="input-field col s12 m6">
                             <select id="selectDevice" class="icons">
                               <option value="" disabled selected>Seleccionar Tipo</option>
-                              <option value="0" data-icon="static/images/luz.jpg">Lámpara</option>
-                              <option value="1" data-icon="static/images/ac.jpg">Ventana</option>
-                              <option value="2" data-icon="static/images/ac.jpg">Aire Acondicionado</option>
+                              <option value="0" data-icon="static/images/lightbulb.jpg">Lámpara</option>
+                              <option value="1" data-icon="static/images/window.jpg">Ventana</option>
                             </select>
                             <label>Tipo de Dispositivo</label>
                           </div>
@@ -210,8 +213,13 @@ class Main implements EventListenerObject,HandleResponse{
         }
         else if (objEvento.id.startsWith("cb_")){
             let idDisp=objEvento.id.substring(3);
-            let miAtt=objEvento.getAttribute("miAtt");
-            alert("Se cambió el estado del dispositivo "+idDisp + " - " + miAtt + " | " + (<HTMLInputElement>objEvento).checked);
+            let check= <HTMLInputElement> document.getElementById(`cb_${idDisp}`);
+            let state:Number;
+            if (check.checked==true){
+                state = 1;
+            }
+            else {state = 0}
+            this.cambiarEstadoEnServidor(idDisp,state);
         }
         else if (objEvento.id=="btnAdd"){
             this.cargarModal("add");
@@ -221,10 +229,6 @@ class Main implements EventListenerObject,HandleResponse{
             let txtName = <HTMLInputElement> document.getElementById("deviceName");
             let txtDescription = <HTMLInputElement> document.getElementById("deviceDescription");
             let selectDevice = <HTMLSelectElement> document.getElementById("selectDevice");
-            console.log(txtId);
-            console.log(txtName.value);
-            console.log(txtDescription.value);
-            console.log(selectDevice.value);
             let jsondata = {"id":txtId.value, "name":txtName.value, "description":txtDescription.value, "type":selectDevice.value};
             this.crearDispositivoEnServidor(jsondata);
             alert("Agregando dispositivo...");
@@ -258,7 +262,7 @@ class Main implements EventListenerObject,HandleResponse{
             alert(`Dispositivo ${idDisp} eliminado`);
         }
         else if (objEvento.id=="help") {
-            alert("Help!");
+            alert("Todos necesitamos ayuda de vez en cuando. Pronto estará disponible aquí también.");
         }
     }
 }

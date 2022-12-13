@@ -158,21 +158,49 @@ En esta sección podés ver los detalles específicos de funcionamiento del cód
 
 ### Agregar un dispositivo
 
-Completá los pasos para agregar un dispositivo desde el cliente web.
+Se puede agregar un dispositivo tanto desde el Frontend como del Backend.
+
+**Usando el Frontend:**
+1. Ingresar al sitio de la SPA.
+2. Hacer clic en el botón "AGREGAR". Se abrirá una caja con un formulario.
+3. Completar los datos del nuevo dispositivo: *ID*, *Nombre*, *Tipo de Dispositivo*, y *Descripción del Dispositivo*.
+4. Hacer clic en "AGREGAR" de la caja de formulario.
+5. Se recibe un mensaje de confirmación o de error.
+
+**Nota:** En la versión actual, la ID debe seleccionarse manualmente. En caso de ya existir en la memoria del sistema, se presentará un mensaje de error.
+
+
+**Usando el Backend:**
+1. Se debe enviar un mensaje JSON en una solicitud HTTP con el método PUT a url/addDevice/
+2. Se recibe un mensaje de confirmación o de error.
+
+**Nota:** En la versión actual, la ID debe seleccionarse manualmente. En caso de ya existir en la memoria del sistema, se presentará un mensaje de error.
 
 ### Frontend
 
-Completá todos los detalles sobre cómo armaste el frontend, sus interacciones, etc.
+Al cargar la página por primera vez, se debe solicitar la lista actualizada de dispositivos haciendo clic en el botón **"Actualizar Lista"**. Para obtener los datos de esta lista, se hace una solicitud al backend con un GET al endpoint /devices/. Aquí se obtiene la lista de **todos** los dispositivos.
+
+**Botones y funcionalidades:**
+- **ACTUALIZAR LISTA:** Refresca la lista de dispositivos actualmente en el sistema. En esta lista puede verse el *Nombre*, *Descripción*, *Tipo (imagen)*, y *Estado del Dispositivo*. En esta lista también se pueden editar y eliminar dispositivos. Para obtener los datos de esta lista, se hace una solicitud al backend con un GET al endpoint /devices/.
+
+- **AGREGAR:** Este botón abre una caja de un formulario para ingresar los datos de un nuevo dispositivo. El dispositivo que se inserta aquí es enviado al Backend en un JSON por medio de una solicitud POST al endpoint /addDevice/.
+
+- **EDITAR:** Este botón abre una caja de un formulario de edición, dónde se pueden editar los valores de *Nombre*, *Descripción* y *Tipo*. Las ediciones son enviadas en un JSON al backend por medio de una solicitud PUT al endpoint /editdevice/.
+
+- **ELIMINAR:** Este botón permite eliminar el dispositivo definitivamente. Luego de hacer clic, se abre un cuadro de confirmación y si se acepta, se elimina el dispositivo y se refresca la lista. El dispositivo también se elimina en el backend, por medio de un JSON que se envía por método DELETE al endpoint /deletedevice/.
+
+
+**Otras funciones**
+- Los cambios de estado ("State") en el Frontend también son enviados al Backend por medio de un JSON al endpoint /changestate/.
+- La lista de dispositivos se actualiza automáticamente luego de realizar un cambio, o de agregar/eliminar un dispositivo.
 
 ### Backend
 
-Completá todos los detalles de funcionamiento sobre el backend, sus interacciones con el cliente web, la base de datos, etc.
+El backend en esta versión mantiene los datos en memoria y no utiliza una base de datos para su almacenamiento (*Próximo a implementar*). Sin embargo, puede cumplir con todas las tareas de agregar, modificar y eliminar dispositivos, así como interactuar con el estado del dispositivo desde el Frontend. Estas interacciones entre el Frontend y el Backend se realizan por medio de archivos JSON que se envían a través de solicitudes HTTP a la API (REST). También se permite en muchos casos interactuar directamente con el backend.
 
 <details><summary><b>Ver los endpoints disponibles</b></summary><br>
 
-Completá todos los endpoints del backend con los metodos disponibles, los headers y body que recibe, lo que devuelve, ejemplos, etc.
-
-1) Devolver el estado de los dispositivos.
+1) Devolver la información de los dispositivos (/devices/).
 
 ```json
 {
@@ -180,17 +208,143 @@ Completá todos los endpoints del backend con los metodos disponibles, los heade
     "request_headers": "application/json",
     "request_body": "",
     "response_code": 200,
-    "request_body": {
-        "devices": [
-            {
-                "id": 1,
-                "status": true,
-                "description": "Kitchen light"
-            }
+    "response_body": 
+        [
+            { "id": 1, "name": "Lámpara 1", "description": "Luz Living", "state": 1, "type": 0 },
+            { "id": 2, "name": "Lámpara 2", "description": "Luz Cocina", "state": 0, "type": 0 },
+            { "id": 3, "name": "Velador", "description": "Velador Living", "state": 1, "type": 0 }
         ]
-    },
+}
+```
+
+2) Devolver la información de un dispositivo en particular.
+
+**Endpoint:** /devices/
+
+2.1) URL (/devices/:id)
+    Se coloca en la URL la ID del dispositivo del cual se quiere obtener información. Por ejemplo: */devices/1* devolverá un JSON con la información del dispositivo 1:
+
+    ```json
+    [
+        { "id": 1, "name": "Lámpara 1", "description": "Luz Living", "state": 1, "type": 0 }
+    ]
+    ```
+
+2.2) El método preferido es con un JSON, que también es el que utiliza el Frontend:
+
+```json
+{
+    "method": "get",
+    "request_headers": "application/json",
+    "request_body": {"id":1},
+    "response_code": 200,
+    "response_body": 
+        [
+            { "id": 1, "name": "Lámpara 1", "description": "Luz Living", "state": 1, "type": 0 },
+        ]
 }
 ``` 
+En caso de enviar no enviar correctamente el ID de un dispositivo, por cualquiera de los dos métodos, se retorna un código de estado *400 - Bad Request*.
+
+
+3) Cambiar el estado de un dispositivo en el Backend.
+Se debe enviar el id del dispositivo a cambiar, se puede hacer tanto con un JSON como por la URL (/changestate/?id=&state=). Si se hace directamente en el backend, debe actualizarse el frontend por medio del botón. Si se hace por medio del frontend, entonces la actualización es inmediata.
+
+**Endpoint:** /changestate/
+
+```json
+{
+    "method": "get",
+    "request_headers": "application/json",
+    "request_body": {"id":1, "state":0},
+    "response_code": 200,
+    "response_body": 
+        [
+            { "id": 1, "name": "Lámpara 1", "description": "Luz Living", "state": 0, "type": 0 },
+        ]
+}
+``` 
+En caso de enviar no enviar correctamente el ID de un dispositivo, por cualquiera método, se retorna un código de estado *400 - Bad Request*.
+
+
+4) Agregar un dispositivo.
+
+Se deben enviar los datos (id, nombre, descripción, y tipo) del dispositivo a agregar (el estado es 0 por defecto). Se puede hacer solamente con un JSON. Si se hace directamente en el backend, debe actualizarse el frontend por medio del botón "Actualizar". Si se hace por medio del frontend, entonces la actualización es inmediata (en este caso se envía un JSON desde el Frontend).
+
+La respuesta es la lista de los dispositivos actualizada.
+
+**Endpoint:** /addDevice/
+
+```json
+{
+    "method": "post",
+    "request_headers": "application/json",
+    "request_body": {"id":10, "name":"Ventilador", "description":"Ventilador del Cuarto", "state":0, "type":3},
+    "response_code": 201,
+    "response_body": 
+        [
+            { "id": 1, "name": "Lámpara 1", "description": "Luz Living", "state": 1, "type": 0 },
+            { "id": 2, "name": "Lámpara 2", "description": "Luz Cocina", "state": 0, "type": 0 },
+            { "id": 3, "name": "Velador", "description": "Velador Living", "state": 1, "type": 0 },
+            {"id":10, "name":"Ventilador", "description":"Ventilador del Cuarto", "state":0, "type":3}
+        ]
+}
+``` 
+En caso de enviar una ID ya existente, se recibe un código de estado *406 - Not Acceptable*, y en caso de agregarse el dispositivo se recibe un estado *201 - Created*.
+
+
+5) Editar un dispositivo.
+Se deben enviar los datos (nombre, descripción, y tipo) del dispositivo a cambiar con su ID. Se puede hacer solamente con un JSON. Si se hace directamente en el backend, debe actualizarse el frontend por medio del botón "Actualizar". Si se hace por medio del frontend, entonces la actualización es inmediata (en este caso se envía un JSON desde el Frontend).
+
+La respuesta es la lista de los dispositivos actualizada.
+
+**Endpoint:** /editdevice/
+
+```json
+{
+    "method": "put",
+    "request_headers": "application/json",
+    "request_body": {"id":2, "name":"Lámpara 2", "description":"Luz Cuarto", "type":0},
+    "response_code": 200,
+    "response_body": 
+        [
+            { "id": 1, "name": "Lámpara 1", "description": "Luz Living", "state": 1, "type": 0 },
+            { "id": 2, "name": "Lámpara 2", "description": "Luz Cuarto", "state": 0, "type": 0 },
+            { "id": 3, "name": "Velador", "description": "Velador Living", "state": 1, "type": 0 },
+            {"id":10, "name":"Ventilador", "description":"Ventilador del Cuarto", "state":0, "type":3}
+        ]
+}
+``` 
+En caso de enviar no enviar correctamente el ID de un dispositivo, por cualquiera método, se retorna un código de estado *400 - Bad Request*.
+Solo se actualizan los valores que sean diferentes a los que ya se encuentran en el Backend. En caso de que no haya cambios, se registra en un mensaje en la consola.
+
+
+6) Eliminar un dispositivo.
+Se debe enviar el ID del dispositivo a eliminar. Se puede hacer solamente con un JSON. Si se hace directamente en el backend, debe actualizarse el frontend por medio del botón "Actualizar". Si se hace por medio del frontend, entonces la actualización es inmediata (en este caso se envía un JSON desde el Frontend).
+
+La respuesta es la lista de los dispositivos actualizada.
+
+**Endpoint:** /deletedevice/
+
+```json
+{
+    "method": "delete",
+    "request_headers": "application/json",
+    "request_body": {"id":2},
+    "response_code": 200,
+    "response_body": 
+        [
+            { "id": 1, "name": "Lámpara 1", "description": "Luz Living", "state": 1, "type": 0 },
+            { "id": 3, "name": "Velador", "description": "Velador Living", "state": 1, "type": 0 },
+            {"id":10, "name":"Ventilador", "description":"Ventilador del Cuarto", "state":0, "type":3}
+        ]
+}
+``` 
+En caso de enviar no enviar correctamente el ID de un dispositivo, por cualquiera método, se retorna un código de estado *400 - Bad Request*. En caso de enviar una ID que no existe, se recibe un código de estado *406 - Not Acceptable*.
+
+
+7) Editar configuraciones avanzadas (*No implementado*).
+*Por implementar: agregar campos adicionales al estado para los dispositivos que lo permitan (ej. temperatura e intensidad(?) para aire acondicionado, atenuación y color para luces, porcentaje de apertura/cierra en ventanas, etc.). Estas configuraciones avanzadas pueden ser ajustadas en el frontend y enviadas al backend, o directamente ajustadas en el backend*
 
 </details>
 
