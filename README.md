@@ -224,11 +224,11 @@ El backend en esta versión mantiene los datos en memoria y no utiliza una base 
 2.1) URL (/devices/:id)
     Se coloca en la URL la ID del dispositivo del cual se quiere obtener información. Por ejemplo: */devices/1* devolverá un JSON con la información del dispositivo 1:
 
-    ```json
+```json
     [
         { "id": 1, "name": "Lámpara 1", "description": "Luz Living", "state": 1, "type": 0 }
     ]
-    ```
+```
 
 2.2) El método preferido es con un JSON, que también es el que utiliza el Frontend:
 
