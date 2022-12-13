@@ -1,23 +1,12 @@
 declare const M;
 class Main implements EventListenerObject,HandleResponse{
     private framework:Framework = new Framework();
-    private personas: Array<Persona> = new Array();
-    constructor(per:Persona){
-        this.personas.push(per);
-    }
-    public addPersona(per: Persona) {
-        this.personas.push(per);
-    }
-    public getPersona(){
-        return this.personas;
-    }
 
     consultarDispositivoEnServidor(idDisp?) {
         if (idDisp != undefined) {
             let data = idDisp;
             console.log(`Obteniendo información del dispositivo ${idDisp}`);
             this.framework.ejecutarRequest("GET",`http://localhost:8000/devices/${idDisp}`,this,"modal");
-            console.log(this);
         }
         else {
             this.framework.ejecutarRequest("GET","http://localhost:8000/devices",this,"");
@@ -110,15 +99,15 @@ class Main implements EventListenerObject,HandleResponse{
             <form class="col s12">
                 <div class="row">
                     <div class="input-field col s2">
-                        <input id="txtId" type="text" class="validate">
-                        <label for="txtId">ID</label>
+                        <input id="txtId_New" type="text" class="validate">
+                        <label for="txtId_New">ID</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="deviceName" type="text" class="validate">
-                        <label for="deviceName">Nombre</label>
+                        <input id="deviceName_New" type="text" class="validate">
+                        <label for="deviceName_New">Nombre</label>
                     </div>
                     <div class="input-field col s8 m6">
-                        <select id="selectDevice" class="icons">
+                        <select id="selectDevice_New" class="icons">
                           <option value="" disabled selected>Seleccionar Tipo</option>
                           <option value="0" data-icon="static/images/lightbulb.jpg">Lámpara</option>
                           <option value="1" data-icon="static/images/window.jpg">Ventana</option>
@@ -126,19 +115,19 @@ class Main implements EventListenerObject,HandleResponse{
                         <label>Tipo de Dispositivo</label>
                       </div>
                     <div class="input-field col s12">
-                        <input id="deviceDescription" type="text" class="validate">
-                        <label for="deviceDescription">Descripción del Dispositivo</label>
+                        <input id="deviceDescription_New" type="text" class="validate">
+                        <label for="deviceDescription_New">Descripción del Dispositivo</label>
                       </div>
                 </div>
             </form>
-        </div>
-        <div class="modal-footer">
-            <a id="btnConfirmAdd" class="btn waves-effect waves-light button-view">Agregar</a>
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
-        </div>`;
-        modalAlta.innerHTML = modal;
-        let btnConfirmAdd = document.getElementById("btnConfirmAdd");
-        btnConfirmAdd.addEventListener("click", this);
+            </div>
+            <div class="modal-footer">
+                <a id="btnConfirmAdd" class="btn waves-effect waves-light button-view">Agregar</a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+            </div>`;
+            modalAlta.innerHTML = modal;
+            let btnConfirmAdd = document.getElementById("btnConfirmAdd");
+            btnConfirmAdd.addEventListener("click", this);
         }
         else if (tipo=="edit"){
             this.consultarDispositivoEnServidor(idDisp);
@@ -225,11 +214,12 @@ class Main implements EventListenerObject,HandleResponse{
             this.cargarModal("add");
         }
         else if (objEvento.id=="btnConfirmAdd"){
-            let txtId = <HTMLInputElement> document.getElementById("txtId");
-            let txtName = <HTMLInputElement> document.getElementById("deviceName");
-            let txtDescription = <HTMLInputElement> document.getElementById("deviceDescription");
-            let selectDevice = <HTMLSelectElement> document.getElementById("selectDevice");
+            let txtId = <HTMLInputElement> document.getElementById("txtId_New");
+            let txtName = <HTMLInputElement> document.getElementById("deviceName_New");
+            let txtDescription = <HTMLInputElement> document.getElementById("deviceDescription_New");
+            let selectDevice = <HTMLSelectElement> document.getElementById("selectDevice_New");
             let jsondata = {"id":txtId.value, "name":txtName.value, "description":txtDescription.value, "type":selectDevice.value};
+            console.log(jsondata);
             this.crearDispositivoEnServidor(jsondata);
             alert("Agregando dispositivo...");
             let elementoModal = document.getElementById("modalAlta");
@@ -246,6 +236,7 @@ class Main implements EventListenerObject,HandleResponse{
             let txtDescription = <HTMLInputElement> document.getElementById("deviceDescription");
             let selectDevice = <HTMLSelectElement> document.getElementById("selectDevice");
             let jsondata = {"id":idDisp, "name":txtName.value, "description":txtDescription.value, "type":selectDevice.value};
+            console.log(jsondata);
             this.editarDispositivoEnServidor(idDisp,jsondata);
             alert("Modificando dispositivo...");
             let elementoModal = document.getElementById("modalEdit");
@@ -269,18 +260,12 @@ class Main implements EventListenerObject,HandleResponse{
 
 window.addEventListener("load", ()=>{
     //Initialization
+    let main: Main = new Main();
+
     //Modal
     var elemsM = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elemsM, "");
- 
-    //LISTENER
-    //BORRAR
-    let user:Usuario = new Usuario("Juan","jperez","jperez@email.com");
-    let per1 = new Persona ("Matias");
-    per1.edad = 12;
-    let main: Main = new Main(per1);
-    main.addPersona(new Persona("Pepe"));
-    mostrar(main);
+
     //Botones
     let btn = document.getElementById("btnRefresh");
     btn.addEventListener("click", main);
@@ -289,12 +274,3 @@ window.addEventListener("load", ()=>{
     let help = document.getElementById("help");
     help.addEventListener("click", main);
 });
-
-function mostrar(main:Main) {
-    let personas = main.getPersona();
-    let datosPersonas ="";
-    for(let i in personas) {
-        datosPersonas = datosPersonas + personas[i].toString();
-    }
-
-}

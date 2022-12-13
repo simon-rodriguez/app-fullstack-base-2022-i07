@@ -65,15 +65,21 @@ app.post('/changestate/', function(req,res) {
 // Recibe un JSON con el dispositivo nuevo
 app.post('/addDevice/', function(req,res){
     console.log("Agregando nuevo dispositivo...");
-    let idcheck = devices.filter((device)=> device.id == req.body.id);
-    if(idcheck.length>0){
-        console.log("ID ya existe");
-        res.sendStatus(406);
+    if(req.body.id.length>0){
+        let idcheck = devices.filter((device)=> device.id == req.body.id);
+        if(idcheck.length>0){
+            console.log("ID ya existe");
+            res.sendStatus(406);
+        }
+        else {
+            devices.push({"id":req.body.id, "name":req.body.name, "description":req.body.description, "state":req.body.state, "type":req.body.type});
+            console.log(`Dispositivo ${req.body.id} (${req.body.name}) agregado correctamente.`);
+            res.json(devices).status(201);
+        }
     }
     else {
-        devices.push({"id":req.body.id, "name":req.body.name, "description":req.body.description, "state":req.body.state, "type":req.body.type});
-        console.log(`Dispositivo ${req.body.id} (${req.body.name}) agregado correctamente.`);
-        res.sendStatus(201);
+        console.log("Error, falta ID");
+        res.sendStatus(400);
     }
 });
 
