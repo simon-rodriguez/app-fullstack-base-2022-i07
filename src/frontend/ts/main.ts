@@ -221,7 +221,7 @@ class Main implements EventListenerObject,HandleResponse{
             let jsondata = {"id":txtId.value, "name":txtName.value, "description":txtDescription.value, "type":selectDevice.value};
             console.log(jsondata);
             this.crearDispositivoEnServidor(jsondata);
-            alert("Agregando dispositivo...");
+            M.toast({html: 'Agregando dispositivo...'});
             let elementoModal = document.getElementById("modalAlta");
             var instanceM = M.Modal.getInstance(elementoModal);
             instanceM.close();
@@ -238,7 +238,7 @@ class Main implements EventListenerObject,HandleResponse{
             let jsondata = {"id":idDisp, "name":txtName.value, "description":txtDescription.value, "type":selectDevice.value};
             console.log(jsondata);
             this.editarDispositivoEnServidor(idDisp,jsondata);
-            alert("Modificando dispositivo...");
+            M.toast({html: 'Modificando dispositivo...'});;
             let elementoModal = document.getElementById("modalEdit");
             var instanceM = M.Modal.getInstance(elementoModal);
             instanceM.close();
@@ -250,7 +250,7 @@ class Main implements EventListenerObject,HandleResponse{
         else if (objEvento.id=="btnConfirmDelete") {
             let idDisp = objEvento.getAttribute("idDisp");    
             this.eliminarDispositivoEnServidor(idDisp);
-            alert(`Dispositivo ${idDisp} eliminado`);
+            M.toast({html: `Dispositivo ${idDisp} eliminado`});
         }
         else if (objEvento.id=="help") {
             alert("Todos necesitamos ayuda de vez en cuando. Pronto estará disponible aquí también.");

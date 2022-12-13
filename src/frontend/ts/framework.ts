@@ -19,7 +19,7 @@ class Framework{
                     }
                 }
                 else if(xmlHttp.status==201){
-                    alert("Elemento creado satisfactoriamente.");
+                    M.toast({html: 'Elemento creado satisfactoriamente'});
                 }
                 else {
                     alert(`ERROR en la consulta. Código ${xmlHttp.status}: ${xmlHttp.statusText}`);
