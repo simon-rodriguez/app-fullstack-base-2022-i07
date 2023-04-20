@@ -68,6 +68,11 @@ class Main implements EventListenerObject,HandleResponse{
                     On
                     </label>
                 </div>
+                <form action="#">
+                    <p class="range-field">
+                        <input type="range" id="rango_${disp.id}" min="0" max="100" />
+                    </p>
+                </form>
             </a>
             <a id="btnEdit_${disp.id}" class="waves-effect waves-teal btn-flat modal-trigger" href="#modalEdit"><i class="material-icons left">edit</i>Editar</a>
             <a id="btnDelete_${disp.id}" class="waves-effect waves-teal btn-flat modal-trigger" href="#modalDelete"><i class="material-icons left">delete</i>Eliminar</a>
